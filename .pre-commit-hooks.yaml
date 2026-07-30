@@ -1,0 +1,8 @@
+- id: conventional-branch
+  name: Conventional branch name
+  description: Validate the current branch name against the Conventional Branch spec.
+  entry: scripts/validate-branch.sh
+  language: script
+  always_run: true
+  pass_filenames: false
+  stages: [pre-commit]

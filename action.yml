@@ -1,0 +1,77 @@
+name: Conventional Validator
+description: >-
+  Validate that commit messages follow the Conventional Commits spec and that
+  the branch name follows the Conventional Branch spec, using pure shell.
+author: oberijoe
+
+branding:
+  icon: check-circle
+  color: green
+
+inputs:
+  validate-commits:
+    description: Whether to validate commit messages.
+    required: false
+    default: "true"
+  validate-branch:
+    description: Whether to validate the branch name.
+    required: false
+    default: "true"
+  commit-types:
+    description: >-
+      Space or comma separated list of allowed Conventional Commit types.
+    required: false
+    default: "feat fix docs style refactor perf test build ci chore revert"
+  branch-types:
+    description: >-
+      Space or comma separated list of allowed Conventional Branch prefixes.
+    required: false
+    default: "feature bugfix hotfix release chore"
+  require-scope:
+    description: Require a scope on every commit, e.g. feat(api):.
+    required: false
+    default: "false"
+  max-subject-length:
+    description: Maximum length of the commit subject line (0 disables the check).
+    required: false
+    default: "100"
+  validate-body:
+    description: >-
+      Validate the commit body/footers: require a blank line between subject
+      and body, and enforce the BREAKING CHANGE footer format.
+    required: false
+    default: "true"
+  protected-branches:
+    description: >-
+      Space or comma separated branch names exempt from branch validation
+      (e.g. long-lived branches like main or develop).
+    required: false
+    default: "main master develop dev"
+  base-ref:
+    description: >-
+      Optional git ref to use as the base of the commit range. When empty the
+      action derives the range from the triggering event.
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Validate commit messages
+      if: inputs.validate-commits == 'true'
+      shell: bash
+      env:
+        INPUT_COMMIT_TYPES: ${{ inputs.commit-types }}
+        INPUT_REQUIRE_SCOPE: ${{ inputs.require-scope }}
+        INPUT_MAX_SUBJECT_LENGTH: ${{ inputs.max-subject-length }}
+        INPUT_VALIDATE_BODY: ${{ inputs.validate-body }}
+        INPUT_BASE_REF: ${{ inputs.base-ref }}
+      run: bash "${GITHUB_ACTION_PATH}/scripts/validate-commits.sh"
+
+    - name: Validate branch name
+      if: inputs.validate-branch == 'true'
+      shell: bash
+      env:
+        INPUT_BRANCH_TYPES: ${{ inputs.branch-types }}
+        INPUT_PROTECTED_BRANCHES: ${{ inputs.protected-branches }}
+      run: bash "${GITHUB_ACTION_PATH}/scripts/validate-branch.sh"
