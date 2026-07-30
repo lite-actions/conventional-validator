@@ -1,0 +1,75 @@
+name: Changelog
+
+# On merge to main, log the push's commits to CHANGELOG.md and land the update
+# via an auto-merged PR (main is protected, so direct pushes are rejected).
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - CHANGELOG.md # stops the changelog PR's own merge from looping
+
+permissions:
+  contents: read
+
+concurrency:
+  group: changelog
+  cancel-in-progress: false
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # A user PAT so the branch push / PR creation act as a real user and
+          # therefore trigger the required checks (GITHUB_TOKEN would not).
+          token: ${{ secrets.CHANGELOG_BOT_TOKEN }}
+
+      - name: Update changelog
+        id: changelog
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.event.after }}
+        run: bash .github/scripts/generate-changelog.sh
+
+      - name: Open, approve and auto-merge changelog PR
+        if: steps.changelog.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.CHANGELOG_BOT_TOKEN }}
+          APPROVE_TOKEN: ${{ secrets.CHANGELOG_APPROVE_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GH_TOKEN:-}" ] || [ -z "${APPROVE_TOKEN:-}" ]; then
+            echo "::warning::CHANGELOG_BOT_TOKEN / CHANGELOG_APPROVE_TOKEN not set; skipping changelog PR."
+            exit 0
+          fi
+          branch="chore/changelog-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "${branch}"
+          git add CHANGELOG.md
+          git commit --no-verify -m "docs(changelog): update changelog"
+          git push origin "${branch}"
+
+          gh pr create --base main --head "${branch}" \
+            --title "docs(changelog): update changelog" \
+            --body "Automated changelog update from the latest merge to \`main\`."
+
+          # Approve with a second identity: a PR author/last-pusher cannot
+          # self-approve, and GITHUB_TOKEN cannot approve at all.
+          GH_TOKEN="${APPROVE_TOKEN}" gh pr review "${branch}" --approve \
+            --body "Automated approval of changelog update."
+
+          gh pr merge "${branch}" --auto --rebase --delete-branch
+
+      - name: Clean up on failure
+        if: failure() && steps.changelog.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.CHANGELOG_BOT_TOKEN }}
+        run: |
+          branch="chore/changelog-${GITHUB_RUN_ID}"
+          gh pr close "${branch}" --delete-branch 2>/dev/null || true
+          gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${branch}" 2>/dev/null || true
+          echo "Cleaned up ${branch} (if it existed)."

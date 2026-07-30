@@ -38,7 +38,7 @@ list_contains() {
   local needle="$1"
   shift
   local item
-  for item in $*; do
+  for item in "$@"; do
     [ "$item" = "$needle" ] && return 0
   done
   return 1

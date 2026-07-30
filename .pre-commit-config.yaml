@@ -1,0 +1,27 @@
+default_install_hook_types: [pre-commit, commit-msg]
+default_stages: [pre-commit]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-executables-have-shebangs
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v2.1.1
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: []
+  # Dogfood this repo's own branch-name hook.
+  - repo: local
+    hooks:
+      - id: conventional-branch
+        name: Conventional branch name
+        entry: scripts/validate-branch.sh
+        language: script
+        stages: [pre-commit]
+        always_run: true
+        pass_filenames: false

@@ -1,0 +1,31 @@
+name: Conventional Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+  workflow_dispatch:
+    inputs:
+      base-ref:
+        description: >-
+          Base ref for the commit range when run manually
+          (e.g. origin/main). Leave empty to check only HEAD.
+        required: false
+        default: ""
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Dogfood the action from this repo (local reference).
+      - name: Validate conventional commits & branch
+        uses: ./
+        with:
+          validate-commits: "true"
+          validate-branch: "true"
+          validate-body: "true"
+          base-ref: ${{ github.event.inputs.base-ref }}
