@@ -25,7 +25,9 @@ jobs:
           fetch-depth: 0
           # A user PAT so the branch push / PR creation act as a real user and
           # therefore trigger the required checks (GITHUB_TOKEN would not).
-          token: ${{ secrets.CHANGELOG_BOT_TOKEN }}
+          # Falls back to github.token before the secret is configured, so the
+          # job checks out and then gracefully skips instead of erroring.
+          token: ${{ secrets.CHANGELOG_BOT_TOKEN || github.token }}
 
       - name: Update changelog
         id: changelog
