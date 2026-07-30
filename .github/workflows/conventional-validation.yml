@@ -21,8 +21,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Dependabot's branch/commit naming is bot-controlled and can't follow the
+      # conventional-branch spec; skip validation for it but still report the
+      # (required) check as passing.
+      - name: Skip for Dependabot
+        if: github.actor == 'dependabot[bot]'
+        run: echo "Dependabot PR — conventional validation skipped."
+
       # Dogfood the action from this repo (local reference).
       - name: Validate conventional commits & branch
+        if: github.actor != 'dependabot[bot]'
         uses: ./
         with:
           validate-commits: "true"
