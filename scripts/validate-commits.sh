@@ -48,6 +48,14 @@ elif [ "${GITHUB_EVENT_NAME:-}" = "push" ]; then
   fi
 fi
 
+# A range needs full history; a shallow clone can't resolve it. Fail with an
+# actionable message instead of a cryptic git error.
+if [ -n "${range}" ] && \
+   [ "$(git rev-parse --is-shallow-repository 2>/dev/null)" = "true" ]; then
+  gh_error "Shallow clone detected; the commit range ${range} cannot be resolved. Set 'fetch-depth: 0' on actions/checkout."
+  exit 1
+fi
+
 # Collect the commit SHAs to check. Fall back to just HEAD when we have no
 # usable range (e.g. brand new branch, manual dispatch, or local run).
 # Read into an array without mapfile for portability with older bash.

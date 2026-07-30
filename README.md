@@ -27,6 +27,13 @@ jobs:
           validate-branch: "true"
 ```
 
+`@v1` tracks the latest `v1.x.y` release. For stricter supply-chain guarantees,
+pin to a full commit SHA instead:
+
+```yaml
+      - uses: mrdoodles/conventional-validator@<commit-sha> # v1.0.0
+```
+
 ### Inputs
 
 | Input                | Default                                                         | Description                                                       |
