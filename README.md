@@ -59,6 +59,14 @@ repos:
       - id: conventional-branch
 ```
 
+The allowed branch types default to `feature bugfix hotfix release chore`. To
+use a different list, pass it as `args` (each type is a separate entry):
+
+```yaml
+      - id: conventional-branch
+        args: [feature, bugfix, hotfix, release, chore, dependabot]
+```
+
 ## What is validated
 
 **Commits** — `<type>[optional scope][!]: <description>`, with an optional body
