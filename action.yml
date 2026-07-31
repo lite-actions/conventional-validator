@@ -27,6 +27,13 @@ inputs:
       Space or comma separated list of allowed Conventional Branch prefixes.
     required: false
     default: "feature bugfix hotfix release chore"
+  allow-underscores:
+    description: >-
+      Allow underscores in branch name segments (off by default to match the
+      Conventional Branch spec). Enable to accept e.g. Dependabot branches such
+      as dependabot/github_actions/... (see README "Using with Dependabot").
+    required: false
+    default: "false"
   require-scope:
     description: Require a scope on every commit, e.g. feat(api):.
     required: false
@@ -74,4 +81,5 @@ runs:
       env:
         INPUT_BRANCH_TYPES: ${{ inputs.branch-types }}
         INPUT_PROTECTED_BRANCHES: ${{ inputs.protected-branches }}
+        INPUT_ALLOW_UNDERSCORES: ${{ inputs.allow-underscores }}
       run: bash "${GITHUB_ACTION_PATH}/scripts/validate-branch.sh"

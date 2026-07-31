@@ -73,6 +73,11 @@ echo "branch types configurable via CLI args (pre-commit args):"
 GITHUB_REF_NAME="feat/x" bash "${BRANCH}" feat fix >/dev/null 2>&1; check "custom types via args: feat/x passes" 0 $?
 GITHUB_REF_NAME="feature/x" bash "${BRANCH}" feat fix >/dev/null 2>&1; check "custom types via args: default 'feature' now rejected" 1 $?
 
+echo "underscores (opt-in via INPUT_ALLOW_UNDERSCORES):"
+GITHUB_REF_NAME="feature/foo_bar" bash "${BRANCH}" >/dev/null 2>&1; check "underscore rejected by default (spec-pure)" 1 $?
+INPUT_ALLOW_UNDERSCORES=true GITHUB_REF_NAME="feature/foo_bar" bash "${BRANCH}" >/dev/null 2>&1; check "underscore accepted when allow-underscores=true" 0 $?
+INPUT_ALLOW_UNDERSCORES=true GITHUB_REF_NAME="dependabot/github_actions/actions/checkout-5" bash "${BRANCH}" dependabot >/dev/null 2>&1; check "real Dependabot branch passes with dependabot type + allow-underscores" 0 $?
+
 echo
 echo "passed: ${pass}, failed: ${fail}"
 [ "${fail}" -eq 0 ]
