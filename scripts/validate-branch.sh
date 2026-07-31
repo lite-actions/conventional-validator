@@ -23,6 +23,16 @@ else
   BRANCH_TYPES="${INPUT_BRANCH_TYPES:-${DEFAULT_BRANCH_TYPES}}"
 fi
 TYPES_ALT="$(to_alternation "${BRANCH_TYPES}")"
+
+# Segment character set. The Conventional Branch spec allows lowercase letters,
+# digits and hyphens. Underscores are off by default (spec-pure); opt in with
+# INPUT_ALLOW_UNDERSCORES=true, e.g. to accept Dependabot branches like
+# dependabot/github_actions/... (see README "Using with Dependabot").
+if [ "${INPUT_ALLOW_UNDERSCORES:-false}" = "true" ]; then
+  SEG="a-z0-9_-"
+else
+  SEG="a-z0-9-"
+fi
 PROTECTED="$(normalize_list "${INPUT_PROTECTED_BRANCHES:-main}")"
 
 # ---------------------------------------------------------------------------
@@ -55,7 +65,7 @@ if list_contains "${branch}" ${PROTECTED}; then
 fi
 
 # <type>/<segment>[/<segment>...] with lowercase, digits and hyphens.
-BRANCH_RE="^(${TYPES_ALT})/[a-z0-9]([a-z0-9-]*[a-z0-9])?(/[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$"
+BRANCH_RE="^(${TYPES_ALT})/[a-z0-9]([${SEG}]*[a-z0-9])?(/[a-z0-9]([${SEG}]*[a-z0-9])?)*$"
 
 if [[ "${branch}" =~ ${BRANCH_RE} ]]; then
   echo "✅ Branch '${branch}' follows the Conventional Branch spec."

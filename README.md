@@ -46,6 +46,7 @@ pin to a full commit SHA instead:
 | `require-scope`      | `false`                                                        | Require a scope on every commit, e.g. `feat(api):`.               |
 | `max-subject-length` | `100`                                                          | Max commit subject length (`0` disables).                         |
 | `protected-branches` | `main`                                                         | Branch names exempt from branch validation.                       |
+| `allow-underscores`  | `false`                                                        | Allow underscores in branch segments (off = spec-pure).           |
 | `base-ref`           | `""`                                                           | Explicit base ref for the commit range (auto-derived if empty).   |
 
 ## Use as a pre-commit hook
@@ -74,6 +75,42 @@ use a different list, pass it as `args` (each type is a separate entry):
 skipped.
 
 **Branches** — `<type>/<description>` (lowercase, digits and hyphens).
+
+## Using with Dependabot
+
+Dependabot branch names are always `dependabot/…` and, for some ecosystems,
+contain underscores (e.g. `dependabot/github_actions/actions/checkout-5`).
+Neither the `dependabot` prefix nor the underscore can be changed via
+`dependabot.yml`, so by default such branches **fail** branch validation.
+
+The defaults stay spec-pure. To let Dependabot PRs pass, opt in per-consumer by
+adding `dependabot` to `branch-types` **and** enabling `allow-underscores`:
+
+```yaml
+- uses: mrdoodles/conventional-validator@v1
+  with:
+    branch-types: "feature bugfix hotfix release chore dependabot"
+    allow-underscores: "true"
+```
+
+Also set a conventional commit prefix in `dependabot.yml` so the commits pass
+commit validation and read cleanly:
+
+```yaml
+# .github/dependabot.yml
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly }
+    commit-message:
+      prefix: "chore(deps)"
+```
+
+> **Consequence of removing it:** if you drop `dependabot` from `branch-types`
+> (or disable `allow-underscores`), Dependabot pull requests will fail the branch
+> check on GitHub and can't be merged until the check is satisfied. Alternatively,
+> skip validation for Dependabot in your workflow with
+> `if: github.actor != 'dependabot[bot]'`.
 
 ## Commit range resolution
 
