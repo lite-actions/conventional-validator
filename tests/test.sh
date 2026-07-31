@@ -69,6 +69,10 @@ GITHUB_REF_NAME="feature/add-login" bash "${BRANCH}" >/dev/null 2>&1; check "val
 GITHUB_REF_NAME="Feature/Bad_Branch" bash "${BRANCH}" >/dev/null 2>&1; check "invalid branch name fails" 1 $?
 GITHUB_REF_NAME="main" bash "${BRANCH}" >/dev/null 2>&1; check "protected branch is skipped (passes)" 0 $?
 
+echo "branch types configurable via CLI args (pre-commit args):"
+GITHUB_REF_NAME="feat/x" bash "${BRANCH}" feat fix >/dev/null 2>&1; check "custom types via args: feat/x passes" 0 $?
+GITHUB_REF_NAME="feature/x" bash "${BRANCH}" feat fix >/dev/null 2>&1; check "custom types via args: default 'feature' now rejected" 1 $?
+
 echo
 echo "passed: ${pass}, failed: ${fail}"
 [ "${fail}" -eq 0 ]

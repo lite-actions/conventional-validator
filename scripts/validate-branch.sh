@@ -13,7 +13,16 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=common.sh
 . "${SCRIPT_DIR}/common.sh"
 
-TYPES_ALT="$(to_alternation "${INPUT_BRANCH_TYPES:-feature bugfix hotfix release chore}")"
+DEFAULT_BRANCH_TYPES="feature bugfix hotfix release chore"
+# Precedence: positional CLI args (e.g. a pre-commit hook's `args:`) override the
+# INPUT_BRANCH_TYPES env var (used by the GitHub Action), which overrides the
+# built-in default.
+if [ "$#" -gt 0 ]; then
+  BRANCH_TYPES="$*"
+else
+  BRANCH_TYPES="${INPUT_BRANCH_TYPES:-${DEFAULT_BRANCH_TYPES}}"
+fi
+TYPES_ALT="$(to_alternation "${BRANCH_TYPES}")"
 PROTECTED="$(normalize_list "${INPUT_PROTECTED_BRANCHES:-main}")"
 
 # ---------------------------------------------------------------------------
@@ -60,7 +69,7 @@ Expected format:
   <type>/<description>
 
 Allowed types:
-  $(normalize_list "${INPUT_BRANCH_TYPES:-feature bugfix hotfix release chore}")
+  $(normalize_list "${BRANCH_TYPES}")
 
 Rules:
   - lowercase letters, digits and hyphens only
