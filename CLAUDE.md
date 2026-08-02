@@ -1,0 +1,111 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Scope
+
+A composite **GitHub Action** (pure shell) that validates **Conventional Commits**
+and **Conventional Branch** names, and *also* ships a **pre-commit hook** for
+local branch-name validation. Two surfaces, one codebase:
+
+1. Action: `uses: mrdoodles/conventional-validator@v1` in a workflow.
+2. Pre-commit: `repo: https://github.com/mrdoodles/conventional-validator`,
+   `hooks: [{id: conventional-branch, args: [...]}]`.
+
+It is Marketplace-oriented and dogfoods itself (its own PRs run the action; its
+pre-commit config uses its own hook).
+
+## Layout
+
+- `action.yml` — composite; two shell steps run `scripts/validate-commits.sh`
+  and `scripts/validate-branch.sh` with `INPUT_*` env.
+- `scripts/common.sh` — shared helpers: `gh_error`/`gh_notice`,
+  `normalize_list`, `to_alternation`, `list_contains`.
+- `scripts/validate-commits.sh`, `scripts/validate-branch.sh` — the validators.
+- `.pre-commit-hooks.yaml` — defines the `conventional-branch` hook (entry:
+  `scripts/validate-branch.sh`, `language: script`, `pass_filenames: false`).
+- `tests/test.sh` — the behavioural spec (assert-based).
+- `README.md`, `LICENSE` (MIT), `SECURITY.md`, `CONTRIBUTING.md`, `TODO.md`.
+- **Full CI/CD governance** under `.github/` — see that section below.
+
+## How the validators work
+
+**Inputs** (`action.yml`): `validate-commits`, `validate-branch`,
+`validate-body`, `commit-types`, `branch-types`, `require-scope`,
+`max-subject-length`, `protected-branches`, `allow-underscores`, `base-ref`.
+
+**`validate-commits.sh`** — resolves the commit range (`INPUT_BASE_REF`, else the
+`pull_request` `base..head` from the event JSON, else `push` `before..after`,
+else just `HEAD`), then per commit checks the subject regex
+`^(<types>)(\(scope\))?(!)?: .+`, subject length, and (when `validate-body`) that
+a body is blank-line-separated and any `BREAKING CHANGE:` footer is well-formed.
+Merge/revert commits are skipped.
+
+**`validate-branch.sh`** — gets the branch from `GITHUB_HEAD_REF` /
+`GITHUB_REF_NAME` / `git symbolic-ref`; skips protected branches; validates
+`<type>/<description>`. **Branch types are configurable two ways** with
+precedence: positional **CLI args** (pre-commit `args:`) > `INPUT_BRANCH_TYPES`
+env (the Action) > built-in default.
+
+**`common.sh`** — `gh_error`/`gh_notice` emit GitHub `::error::`/`::notice::`
+annotations only when `GITHUB_ACTIONS=true`, and plain text otherwise (so output
+is clean when run as a local pre-commit hook).
+
+### Behaviours that are locked by tests (don't regress)
+
+- **Breaking-change prose is not a footer.** A body line that merely *starts
+  with* "breaking change" must pass; only a real footer (`BREAKING CHANGE:` with
+  the colon) is enforced. The malformed-footer check requires the trailing colon.
+- **`allow-underscores`** is off by default (spec-pure). When `true`, branch
+  segments may contain `_` — needed for Dependabot branches like
+  `dependabot/github_actions/…`. Dependabot support is opt-in per consumer
+  (`branch-types: "… dependabot"` + `allow-underscores: "true"`); see README
+  "Using with Dependabot". The default lists must stay spec-compliant.
+- Commit-type and branch-type default lists are **intentionally different**
+  vocabularies (`feat/fix/…` vs `feature/bugfix/…`; only `chore` overlaps) —
+  keep them independent.
+
+## Commands
+
+```bash
+bash tests/test.sh
+shellcheck -x --severity=warning scripts/*.sh tests/*.sh
+pre-commit run conventional-branch          # exercise the hook locally
+```
+
+## Coding style
+
+- Pure `bash` with `set -euo pipefail`; must pass
+  `shellcheck -x --severity=warning` (the `lint` workflow enforces it).
+- The regexes are the heart of the tool — change them alongside a test. Quote
+  `done` when literal (SC1010); prefer `awk`/`printf` over `sed | head`.
+- Keep CI-vs-local output correct via `gh_error`/`gh_notice` (don't print raw
+  `::error::` unconditionally).
+- Untrusted input (commit messages, branch names) is only pattern-matched and
+  printed, never `eval`'d. Consumers run it on `pull_request`, not
+  `pull_request_target`.
+
+## CI/CD governance (this repo has the full treatment; `main` is protected)
+
+- **Branch protection**: required checks `validate` + `lint` (the `test` workflow
+  also runs but isn't required), 1 review with code-owner + last-push approval,
+  `enforce_admins`. `CODEOWNERS` lists `@mrdoodles` + `@MrDClaudeBot`.
+- **Landing changes**: PR only, approved by the second `MrDClaudeBot` account
+  (you can't self-approve); auto-merge with `--rebase`; **squash disabled**.
+- **`changelog.yml`** maintains `CHANGELOG.md` via an auto-merged PR using two
+  PAT secrets (`CHANGELOG_BOT_TOKEN` opens the PR so checks run;
+  `CHANGELOG_APPROVE_TOKEN`, a **classic** `MrDClaudeBot` PAT, approves).
+  **Do not hand-edit `CHANGELOG.md`.**
+- **`release.yml`** (manual `workflow_dispatch`): computes the version from
+  BREAKING/feat/fix, tags `vX.Y.Z`, **force-moves the `vN` major tag** so `@v1`
+  consumers get updates, and publishes a GitHub Release. It uses tags only, so it
+  needs no PAT (tags aren't branch-protected).
+- `@v1` is the moving major tag (currently v1.3.0). Cut new versions via
+  `release.yml`, not by hand.
+- **`TODO.md`** tracks deferred work: add release-notes automation (consume
+  `mrdoodles/release-notes`) *after* Marketplace publish.
+
+## Marketplace notes
+
+Publishing needs a globally-unique `name:` in `action.yml`, 2FA on the account,
+and publishing a release that contains the current code.
