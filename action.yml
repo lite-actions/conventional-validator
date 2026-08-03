@@ -1,7 +1,7 @@
 name: Conventional Validator
 description: >-
-  Validate that commit messages follow the Conventional Commits spec and that
-  the branch name follows the Conventional Branch spec, using pure shell.
+  Validates commit messages follow the Conventional Commits spec and 
+  the branch name follows the Conventional Branch spec.
 author: oberijoe
 
 branding:
