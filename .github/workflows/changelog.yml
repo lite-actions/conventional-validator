@@ -6,7 +6,9 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - CHANGELOG.md # stops the changelog PR's own merge from looping
+      # Stop the changelog PR's own merge from looping.
+      - CHANGELOG.md
+      - RELEASE_NOTES.md
 
 permissions:
   contents: read
@@ -31,10 +33,12 @@ jobs:
 
       - name: Update changelog
         id: changelog
-        env:
-          BEFORE_SHA: ${{ github.event.before }}
-          AFTER_SHA: ${{ github.event.after }}
-        run: bash .github/scripts/generate-changelog.sh
+        uses: mrdoodles/conventional-changelog@v1
+
+      # Regenerate RELEASE_NOTES.md (BREAKING/feat/fix since the last release).
+      - name: Generate release notes
+        if: steps.changelog.outputs.changed == 'true'
+        uses: mrdoodles/release-notes@v1
 
       - name: Open, approve and auto-merge changelog PR
         if: steps.changelog.outputs.changed == 'true'
@@ -51,13 +55,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "${branch}"
-          git add CHANGELOG.md
-          git commit --no-verify -m "docs(changelog): update changelog"
+          git add CHANGELOG.md RELEASE_NOTES.md
+          git commit --no-verify -m "docs(changelog): update changelog and release notes"
           git push origin "${branch}"
 
           gh pr create --base main --head "${branch}" \
-            --title "docs(changelog): update changelog" \
-            --body "Automated changelog update from the latest merge to \`main\`."
+            --title "docs(changelog): update changelog and release notes" \
+            --body "Automated changelog + release-notes update from the latest merge to \`main\`."
 
           # Approve with a second identity: a PR author/last-pusher cannot
           # self-approve, and GITHUB_TOKEN cannot approve at all.

@@ -38,27 +38,28 @@ jobs:
 
       - name: Generate release notes
         id: notes
-        env:
-          FROM_REF: ${{ github.event.inputs.from }}
-          TO_REF: ${{ github.event.inputs.to }}
-          VERSION: ${{ github.event.inputs.version }}
-        run: bash .github/scripts/release-notes.sh
+        uses: mrdoodles/release-notes@v1
+        with:
+          from: ${{ github.event.inputs.from }}
+          to: ${{ github.event.inputs.to }}
+          version: ${{ github.event.inputs.version }}
 
       - name: Tag, move major tag, and publish release
         if: steps.notes.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.notes.outputs.version }}
-          TAG: ${{ steps.notes.outputs.tag }}
+          NOTES_FILE: ${{ steps.notes.outputs.file }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          tag="v${VERSION}"
           major="v${VERSION%%.*}"
-          git tag -a "${TAG}" -m "Release ${VERSION}"
+          git tag -a "${tag}" -m "Release ${VERSION}"
           # Force-move the major tag so consumers on @vN get this release.
           git tag -f -a "${major}" -m "${major} -> ${VERSION}"
-          git push origin "${TAG}"
+          git push origin "${tag}"
           git push origin -f "${major}"
-          # RELEASE_NOTES.md (written by the script) is the GitHub Release body.
-          gh release create "${TAG}" --title "${VERSION}" --notes-file RELEASE_NOTES.md
+          # The generated notes file is the GitHub Release body.
+          gh release create "${tag}" --title "${VERSION}" --notes-file "${NOTES_FILE}"
