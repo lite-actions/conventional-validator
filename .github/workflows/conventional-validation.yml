@@ -3,21 +3,13 @@ name: Conventional Validation
 on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
-  workflow_dispatch:
-    inputs:
-      base-ref:
-        description: >-
-          Base ref for the commit range when run manually
-          (e.g. origin/main). Leave empty to check only HEAD.
-        required: false
-        default: ""
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: lite-actions/git-checkout@v1
         with:
           fetch-depth: 0
 
@@ -28,7 +20,8 @@ jobs:
         if: github.actor == 'dependabot[bot]'
         run: echo "Dependabot PR — conventional validation skipped."
 
-      # Dogfood the action from this repo (local reference).
+      # Dogfood the action from this repo (local reference). The commit range
+      # comes from the pull_request event, so no base-ref is needed.
       - name: Validate conventional commits & branch
         if: github.actor != 'dependabot[bot]'
         uses: ./
@@ -36,4 +29,3 @@ jobs:
           validate-commits: "true"
           validate-branch: "true"
           validate-body: "true"
-          base-ref: ${{ github.event.inputs.base-ref }}
