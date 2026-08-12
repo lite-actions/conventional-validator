@@ -3,7 +3,7 @@
 ## Reporting a vulnerability
 
 Please report suspected vulnerabilities privately via GitHub's
-[private security advisories](https://github.com/mrdoodles/conventional-validator/security/advisories/new)
+[private security advisories](https://github.com/lite-actions/conventional-validator/security/advisories/new)
 rather than opening a public issue. You can expect an initial response within a
 few days.
 

@@ -2,7 +2,7 @@ name: Conventional Validator
 description: >-
   Validates commit messages follow the Conventional Commits spec and 
   the branch name follows the Conventional Branch spec.
-author: oberijoe
+author: mrdoodles
 
 branding:
   icon: check-circle

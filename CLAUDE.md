@@ -1,15 +1,16 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with
+code in this repository.
 
 ## Scope
 
-A composite **GitHub Action** (pure shell) that validates **Conventional Commits**
-and **Conventional Branch** names, and *also* ships a **pre-commit hook** for
-local branch-name validation. Two surfaces, one codebase:
+A composite **GitHub Action** (pure shell) that validates **Conventional
+Commits** and **Conventional Branch** names, and _also_ ships a **pre-commit
+hook** for local branch-name validation. Two surfaces, one codebase:
 
-1. Action: `uses: mrdoodles/conventional-validator@v1` in a workflow.
-2. Pre-commit: `repo: https://github.com/mrdoodles/conventional-validator`,
+1. Action: `uses: lite-actions/conventional-validator@v1` in a workflow.
+2. Pre-commit: `repo: https://github.com/lite-actions/conventional-validator`,
    `hooks: [{id: conventional-branch, args: [...]}]`.
 
 It is Marketplace-oriented and dogfoods itself (its own PRs run the action; its
@@ -34,12 +35,12 @@ pre-commit config uses its own hook).
 `validate-body`, `commit-types`, `branch-types`, `require-scope`,
 `max-subject-length`, `protected-branches`, `allow-underscores`, `base-ref`.
 
-**`validate-commits.sh`** — resolves the commit range (`INPUT_BASE_REF`, else the
-`pull_request` `base..head` from the event JSON, else `push` `before..after`,
-else just `HEAD`), then per commit checks the subject regex
-`^(<types>)(\(scope\))?(!)?: .+`, subject length, and (when `validate-body`) that
-a body is blank-line-separated and any `BREAKING CHANGE:` footer is well-formed.
-Merge/revert commits are skipped.
+**`validate-commits.sh`** — resolves the commit range (`INPUT_BASE_REF`, else
+the `pull_request` `base..head` from the event JSON, else `push`
+`before..after`, else just `HEAD`), then per commit checks the subject regex
+`^(<types>)(\(scope\))?(!)?: .+`, subject length, and (when `validate-body`)
+that a body is blank-line-separated and any `BREAKING CHANGE:` footer is
+well-formed. Merge/revert commits are skipped.
 
 **`validate-branch.sh`** — gets the branch from `GITHUB_HEAD_REF` /
 `GITHUB_REF_NAME` / `git symbolic-ref`; skips protected branches; validates
@@ -53,9 +54,10 @@ is clean when run as a local pre-commit hook).
 
 ### Behaviours that are locked by tests (don't regress)
 
-- **Breaking-change prose is not a footer.** A body line that merely *starts
-  with* "breaking change" must pass; only a real footer (`BREAKING CHANGE:` with
-  the colon) is enforced. The malformed-footer check requires the trailing colon.
+- **Breaking-change prose is not a footer.** A body line that merely _starts
+  with_ "breaking change" must pass; only a real footer (`BREAKING CHANGE:` with
+  the colon) is enforced. The malformed-footer check requires the trailing
+  colon.
 - **`allow-underscores`** is off by default (spec-pure). When `true`, branch
   segments may contain `_` — needed for Dependabot branches like
   `dependabot/github_actions/…`. Dependabot support is opt-in per consumer
@@ -87,23 +89,26 @@ pre-commit run conventional-branch          # exercise the hook locally
 
 ## CI/CD governance (this repo has the full treatment; `main` is protected)
 
-- **Branch protection**: required checks `validate` + `lint` (the `test` workflow
-  also runs but isn't required), 1 review with code-owner + last-push approval,
-  `enforce_admins`. `CODEOWNERS` lists `@mrdoodles` + `@MrDClaudeBot`.
+- **Branch protection**: required checks `validate` + `lint` (the `test`
+  workflow also runs but isn't required), 1 review with code-owner + last-push
+  approval, `enforce_admins`. `CODEOWNERS` lists `@mrdoodles` + `@MrDClaudeBot`.
 - **Landing changes**: PR only, approved by the second `MrDClaudeBot` account
   (you can't self-approve); auto-merge with `--rebase`; **squash disabled**.
 - **`changelog.yml`** maintains `CHANGELOG.md` via an auto-merged PR using two
   PAT secrets (`CHANGELOG_BOT_TOKEN` opens the PR so checks run;
-  `CHANGELOG_APPROVE_TOKEN`, a **classic** `MrDClaudeBot` PAT, approves).
-  **Do not hand-edit `CHANGELOG.md`.**
+  `CHANGELOG_APPROVE_TOKEN`, a **classic** `MrDClaudeBot` PAT, approves). **Do
+  not hand-edit `CHANGELOG.md`.**
 - **`release.yml`** (manual `workflow_dispatch`): computes the version from
   BREAKING/feat/fix, tags `vX.Y.Z`, **force-moves the `vN` major tag** so `@v1`
-  consumers get updates, and publishes a GitHub Release. It uses tags only, so it
-  needs no PAT (tags aren't branch-protected).
-- `@v1` is the moving major tag (currently v1.3.0). Cut new versions via
+  consumers get updates, and publishes a GitHub Release. It uses tags only, so
+  it needs no PAT (tags aren't branch-protected).
+- `@v1` is the moving major tag (currently v1.3.3). Cut new versions via
   `release.yml`, not by hand.
+- `release.yml` only cuts a version when the range contains BREAKING/feat/fix
+  commits; a run of pure `chore`/`ci`/`docs` commits reports "nothing to
+  release". Use the `version` input to force one.
 - **`TODO.md`** tracks deferred work: add release-notes automation (consume
-  `mrdoodles/release-notes`) *after* Marketplace publish.
+  `lite-actions/release-notes`) _after_ Marketplace publish.
 
 ## Marketplace notes
 

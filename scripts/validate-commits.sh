@@ -52,7 +52,7 @@ fi
 # actionable message instead of a cryptic git error.
 if [ -n "${range}" ] && \
    [ "$(git rev-parse --is-shallow-repository 2>/dev/null)" = "true" ]; then
-  gh_error "Shallow clone detected; the commit range ${range} cannot be resolved. Set 'fetch-depth: 0' on actions/checkout."
+  gh_error "Shallow clone detected; the commit range ${range} cannot be resolved. Set 'fetch-depth: 0' on your checkout step."
   exit 1
 fi
 

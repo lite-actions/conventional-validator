@@ -2,7 +2,7 @@
 name: shell-scripting
 description: >-
   Writing and reviewing pure-bash scripts, shellcheck-clean CLIs, and GitHub
-  composite-action / reusable-workflow shell for the mrdoodles action repos
+  composite-action / reusable-workflow shell for the lite-actions repos
   (conventional-validator, release-notes, rust-release, agile-md, versioning-tests).
   Load when editing any *.sh, an action.yml/workflow `run:` step, a matrix
   generator, or a tests/test.sh. Covers the specific gotchas: keyword quoting,
@@ -10,7 +10,7 @@ description: >-
   packaging, and the local git/gh push tricks.
 ---
 
-# Shell scripting in the mrdoodles action repos
+# Shell scripting in the lite-actions repos
 
 House style: **pure `bash`**, `set -euo pipefail`, and clean under
 `shellcheck -x --severity=warning` (CI enforces exactly that severity — it fails
