@@ -3,6 +3,13 @@
 All notable changes to this project are documented in this file,
 grouped by push and referenced by short commit SHA.
 
+## 2026-08-19 ([8a84f96](https://github.com/lite-actions/conventional-validator/commit/8a84f96f40df4153137f0bd0f6cc72a36963ec8e))
+
+### Other Changes
+
+- point action references at the lite-actions org ([d92666b](https://github.com/lite-actions/conventional-validator/commit/d92666bf8baa7ef4f4e49b36c2a91292cca3d4d4))
+- remove the Slack notify step from lint ([f7c9dc9](https://github.com/lite-actions/conventional-validator/commit/f7c9dc920daf9bf74a6c91e4c77193334b7f4964))
+
 ## 2026-08-19 ([87a9499](https://github.com/lite-actions/conventional-validator/commit/87a9499816c3f669c28cff03640051f839dabfdb))
 
 ### Other Changes
