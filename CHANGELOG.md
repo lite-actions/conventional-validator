@@ -3,6 +3,12 @@
 All notable changes to this project are documented in this file,
 grouped by push and referenced by short commit SHA.
 
+## 2026-08-19 ([4ff5ef0](https://github.com/lite-actions/conventional-validator/commit/4ff5ef00f62e8f315aa434c27bce68b3cae17959))
+
+### Bug Fixes
+
+- correct the CODEOWNERS pattern so owners actually resolve ([61c4bc6](https://github.com/lite-actions/conventional-validator/commit/61c4bc6af3d9a1fb431de4947f316eeb07e0ba8e))
+
 ## 2026-08-04 ([8d645fe](https://github.com/mrdoodles/conventional-validator/commit/8d645fe6c445093351a92aff90eef9cb373360c5))
 
 ### Other Changes
