@@ -3,6 +3,12 @@
 All notable changes to this project are documented in this file,
 grouped by push and referenced by short commit SHA.
 
+## 2026-08-19 ([87a9499](https://github.com/lite-actions/conventional-validator/commit/87a9499816c3f669c28cff03640051f839dabfdb))
+
+### Other Changes
+
+- create the changelog commit through the API so it is signed ([fadc1c0](https://github.com/lite-actions/conventional-validator/commit/fadc1c05d0a1ee0cdcb944afad5339fd64b8826e))
+
 ## 2026-08-04 ([8d645fe](https://github.com/mrdoodles/conventional-validator/commit/8d645fe6c445093351a92aff90eef9cb373360c5))
 
 ### Other Changes
