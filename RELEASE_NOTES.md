@@ -1,6 +1,8 @@
 # conventional-validator
 
-## v1.3.2
+## v1.3.5
 
-_No user-facing changes since v1.3.1._
+### Fixes
+
+- correct the CODEOWNERS pattern so owners actually resolve
 
