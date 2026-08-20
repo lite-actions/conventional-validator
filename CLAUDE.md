@@ -98,26 +98,30 @@ pre-commit run conventional-branch          # exercise the hook locally
   PAT secrets (`CHANGELOG_BOT_TOKEN` opens the PR so checks run;
   `CHANGELOG_APPROVE_TOKEN`, a **classic** `MrDClaudeBot` PAT, approves). **Do
   not hand-edit `CHANGELOG.md`.**
-- **`release.yml`** (manual `workflow_dispatch`): computes the version from
+- **`publish.yml`** (manual `workflow_dispatch`): computes the version from
   BREAKING/feat/fix, tags `vX.Y.Z`, **force-moves the `vN` major tag** so `@v1`
   consumers get updates, and publishes a GitHub Release. It uses tags only, so
   it needs no PAT (tags aren't branch-protected).
 - `@v1` is the moving major tag (currently v1.3.3). Cut new versions via
-  `release.yml`, not by hand.
-- `release.yml` only cuts a version when the range contains BREAKING/feat/fix
+  `publish.yml`, not by hand.
+- `publish.yml` only cuts a version when the range contains BREAKING/feat/fix
   commits; a run of pure `chore`/`ci`/`docs` commits reports "nothing to
   release". Use the `version` input to force one.
 - **`TODO.md`** tracks deferred work: add release-notes automation (consume
   `lite-actions/release-notes`) _after_ Marketplace publish.
 
-## Versioning & releasing
+## Versioning & publishing
 
-Releases are cut by `release.yml` (`workflow_dispatch`) — never by hand, and
+Releases are cut by `publish.yml` (`workflow_dispatch`) — never by hand, and
 never through the GitHub web UI:
 
 ```bash
-gh workflow run release.yml --repo lite-actions/conventional-validator
+gh workflow run publish.yml --repo lite-actions/conventional-validator
 ```
+
+The workflow is named `publish` rather than `release` because "release" is
+overloaded here: `release-notes` generates notes, `rust-release` builds
+binaries, and this cuts and publishes a version. `publish` names the intent.
 
 It computes the version from the commits since the last `vX.Y.Z` tag, tags the
 release, force-moves `@vN`, and publishes the GitHub Release with the generated
