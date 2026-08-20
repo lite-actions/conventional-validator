@@ -3,6 +3,12 @@
 All notable changes to this project are documented in this file,
 grouped by push and referenced by short commit SHA.
 
+## 2026-08-20 ([43032bc](https://github.com/lite-actions/conventional-validator/commit/43032bc2bf919807a342872e5ebe0b5b0227e84e))
+
+### Other Changes
+
+- adopt common-workflows for lint and test ([7c817c0](https://github.com/lite-actions/conventional-validator/commit/7c817c04eb5cfe5cce0f72f52062694866cdeb40))
+
 ## 2026-08-20 ([ee9701d](https://github.com/lite-actions/conventional-validator/commit/ee9701da6bf1d4557077d9e359a7f8e807b3ab4f))
 
 ### Other Changes
