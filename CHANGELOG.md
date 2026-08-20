@@ -3,6 +3,12 @@
 All notable changes to this project are documented in this file,
 grouped by push and referenced by short commit SHA.
 
+## 2026-08-20 ([6dcf010](https://github.com/lite-actions/conventional-validator/commit/6dcf010fc7130b15264061182ffa00bb1d8400c3))
+
+### Other Changes
+
+- stop installing shellcheck, it ships on the runner ([f953621](https://github.com/lite-actions/conventional-validator/commit/f953621b4d34ebd8eef49a4bcd37147052d43540))
+
 ## 2026-08-19 ([8a84f96](https://github.com/lite-actions/conventional-validator/commit/8a84f96f40df4153137f0bd0f6cc72a36963ec8e))
 
 ### Other Changes
