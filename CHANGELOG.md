@@ -3,6 +3,12 @@
 All notable changes to this project are documented in this file,
 grouped by push and referenced by short commit SHA.
 
+## 2026-08-20 ([9d82265](https://github.com/lite-actions/conventional-validator/commit/9d822658adb397d7a9b9834d9ad74a8905dd8ec9))
+
+### Other Changes
+
+- rename release.yml to publish.yml ([2be2c6f](https://github.com/lite-actions/conventional-validator/commit/2be2c6fc912070c304c3d0181afff4d9842f7342))
+
 ## 2026-08-20 ([117d723](https://github.com/lite-actions/conventional-validator/commit/117d72341eef623f7d0d7ce9d2ff46d969099e81))
 
 ### Other Changes
