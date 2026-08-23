@@ -3,6 +3,12 @@
 All notable changes to this project are documented in this file,
 grouped by push and referenced by short commit SHA.
 
+## 2026-08-23 ([5fb27ea](https://github.com/lite-actions/conventional-validator/commit/5fb27ea36957f69e3ec3a78af4d3bd0da4a06d19))
+
+### Other Changes
+
+- pin git-checkout to a SHA in CI ([5a873b4](https://github.com/lite-actions/conventional-validator/commit/5a873b42b1f2421c1bf0acb44df905fc3e63f6bc))
+
 ## 2026-08-20 ([89c8ab0](https://github.com/lite-actions/conventional-validator/commit/89c8ab052d4c64422fa6f349d4535c33bb8a9071))
 
 ### Other Changes
