@@ -23,7 +23,7 @@ jobs:
       # Dogfood the action from this repo (local reference). The commit range
       # comes from the pull_request event, so no base-ref is needed.
       #
-      # Deliberately NOT migrated to common-workflows/conventional-validation:
+      # Deliberately NOT migrated to actions-workflows/conventional-validation:
       # inside a shared action `./` would resolve to that action's repository,
       # not this one, so the PR would be validated by the last release instead
       # of the working tree. This file has to stay local.
