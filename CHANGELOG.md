@@ -3,6 +3,12 @@
 All notable changes to this project are documented in this file,
 grouped by push and referenced by short commit SHA.
 
+## 2026-08-25 ([a6782a1](https://github.com/lite-actions/conventional-validator/commit/a6782a165f57c1dc47111d663107d9e24411246b))
+
+### Other Changes
+
+- remove the per-repo Claude skills ([e34f692](https://github.com/lite-actions/conventional-validator/commit/e34f692b2129318015864f3a0801deab42cd76a9))
+
 ## 2026-08-25 ([2df5b86](https://github.com/lite-actions/conventional-validator/commit/2df5b86d1ef2d5f84e16ec43b6ddbe4f9bae665b))
 
 ### Other Changes
